@@ -18,6 +18,11 @@ pub trait Project {
     
     /// Get all files that should be committed
     fn get_files_to_commit(&self) -> Vec<PathBuf>;
+    
+    /// Get the package manager update command for this project
+    fn get_package_manager_update_command(&self) -> Option<String> {
+        None
+    }
 }
 
 pub fn detect_project(dir: &str) -> Result<Box<dyn Project>> {
@@ -132,6 +137,24 @@ impl Project for NodeProject {
     
     fn get_files_to_commit(&self) -> Vec<PathBuf> {
         vec![self.path.clone()]
+    }
+    
+    fn get_package_manager_update_command(&self) -> Option<String> {
+        let dir = self.path.parent().unwrap_or(Path::new("."));
+        
+        // Check for different lock files to detect the package manager
+        if dir.join("bun.lockb").exists() {
+            return Some("bun install".to_string());
+        } else if dir.join("yarn.lock").exists() {
+            return Some("yarn".to_string());
+        } else if dir.join("pnpm-lock.yaml").exists() {
+            return Some("pnpm install".to_string());
+        } else if dir.join("package-lock.json").exists() {
+            return Some("npm install".to_string());
+        }
+        
+        // Default to npm if no lock file is found
+        Some("npm install".to_string())
     }
 }
 
@@ -289,6 +312,43 @@ impl Project for PythonProject {
     fn get_files_to_commit(&self) -> Vec<PathBuf> {
         vec![self.path.clone()]
     }
+    
+    fn get_package_manager_update_command(&self) -> Option<String> {
+        let dir = self.path.parent().unwrap_or(Path::new("."));
+        
+        // Check for different lock files and configurations to detect the package manager
+        if dir.join("poetry.lock").exists() {
+            return Some("poetry update".to_string());
+        } else if dir.join("Pipfile.lock").exists() {
+            return Some("pipenv update".to_string());
+        } else if dir.join("pdm.lock").exists() {
+            return Some("pdm update".to_string());
+        }
+        
+        // Check for the presence of uv files or directories
+        if dir.join("uv.lock").exists() || dir.join(".uv").exists() {
+            return Some("uv sync".to_string());
+        }
+        
+        // Read the content of the pyproject.toml to detect Python package tool
+        if let Ok(content) = fs::read_to_string(&self.path) {
+            if content.contains("[tool.poetry]") {
+                return Some("poetry update".to_string());
+            } else if content.contains("[tool.pdm]") {
+                return Some("pdm update".to_string());
+            } else if content.contains("[tool.hatch") {
+                return Some("hatch env update".to_string());
+            }
+        }
+        
+        // Default to pip
+        if dir.join("requirements.txt").exists() {
+            return Some("pip install -r requirements.txt".to_string());
+        }
+        
+        // Return None if we can't confidently determine the package manager
+        None
+    }
 }
 
 // Rust project (Cargo.toml)
@@ -375,6 +435,11 @@ impl Project for RustProject {
     
     fn get_files_to_commit(&self) -> Vec<PathBuf> {
         vec![self.path.clone()]
+    }
+    
+    fn get_package_manager_update_command(&self) -> Option<String> {
+        // Cargo is the only package manager for Rust
+        Some("cargo update".to_string())
     }
 }
 
@@ -500,6 +565,11 @@ impl Project for GoProject {
         files.extend(self.get_version_files());
         files
     }
+    
+    fn get_package_manager_update_command(&self) -> Option<String> {
+        // Go modules has a specific update command
+        Some("go mod tidy".to_string())
+    }
 }
 
 // Ruby project (Gemfile)
@@ -535,7 +605,7 @@ impl RubyProject {
         if lib_dir.exists() {
             // First approach: try to find the project name from gemspec
             if let Some(gemspec_path) = self.find_gemspec_file() {
-                if let Ok(content) = fs::read_to_string(&gemspec_path) {
+                if let Ok(content) = fs::read_to_string(gemspec_path) {
                     // Try to extract gem name from gemspec
                     let name_re = regex::Regex::new(r#"[s\.]name\s*=\s*["']([^"']+)["']"#).unwrap();
                     if let Some(caps) = name_re.captures(&content) {
@@ -644,7 +714,7 @@ impl Project for RubyProject {
     fn get_version(&self) -> Result<Version> {
         // Try to find version in gemspec
         if let Some(gemspec_path) = self.find_gemspec_file() {
-            let content = fs::read_to_string(&gemspec_path)
+            let content = fs::read_to_string(gemspec_path)
                 .context("Failed to read gemspec file")?;
             
             let version_re = regex::Regex::new(r#"(?:version|s\.version)\s*=\s*['"]([^'"]+)['"]\s*"#).unwrap();
@@ -659,7 +729,7 @@ impl Project for RubyProject {
         
         // Try to find version in version.rb
         if let Some(version_rb_path) = self.find_version_rb_file() {
-            let content = fs::read_to_string(&version_rb_path)
+            let content = fs::read_to_string(version_rb_path)
                 .context("Failed to read version.rb file")?;
             
             let version_re = regex::Regex::new(r#"VERSION\s*=\s*['"]([^'"]+)['"]\s*"#).unwrap();
@@ -702,5 +772,17 @@ impl Project for RubyProject {
         }
         
         files
+    }
+    
+    fn get_package_manager_update_command(&self) -> Option<String> {
+        let dir = self.path.parent().unwrap_or(Path::new("."));
+        
+        // Check for Gemfile.lock to confirm Bundler is used
+        if dir.join("Gemfile.lock").exists() {
+            return Some("bundle install".to_string());
+        }
+        
+        // Default to bundle install if Gemfile exists
+        Some("bundle install".to_string())
     }
 }

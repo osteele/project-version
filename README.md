@@ -10,7 +10,14 @@ A cross-language project version bumper CLI that supports multiple project types
   - Python (pyproject.toml)
   - Rust (Cargo.toml)
   - Go (version.go files)
+  - Ruby (Gemfile, gemspec, version.rb)
 - Automatically update CHANGELOG files
+- Automatically update lock files with appropriate package managers
+  - npm, yarn, pnpm, bun for Node.js
+  - uv, poetry, pipenv, pdm for Python
+  - cargo for Rust
+  - bundle for Ruby
+  - go mod for Go
 - Git integration - commit changes and tag releases
 - Dry-run mode for safer execution
 
@@ -33,51 +40,65 @@ cargo install --path .
 ## Usage
 
 ```
-project-version [OPTIONS] [DIRECTORY]
+project-version [OPTIONS] [DIRECTORY] [COMMAND]
 ```
+
+### Commands:
+- `bump` - Bump project version (major, minor, or patch)
+- `help` - Print help information
 
 ### Arguments:
 - `[DIRECTORY]` - Project directory to bump (defaults to current directory)
 
 ### Options:
-- `major|minor|patch` - Type of version bump to perform (default: patch)
-- `--no-commit` - Skip committing changes
-- `--no-tag` - Skip tagging the commit
-- `--force-tag` - Force tag creation (overwrite existing tag)
 - `-v, --verbose` - Verbose output
 - `-n, --dry-run` - Dry run (no file modifications or git operations)
 - `-h, --help` - Print help
 - `-V, --version` - Print version
 
+### Bump Command Options:
+- `[BUMP_TYPE]` - Type of version bump to perform: major, minor, or patch (default: patch)
+- `--no-commit` - Skip committing changes
+- `--no-tag` - Skip tagging the commit
+- `--force-tag` - Force tag creation (overwrite existing tag)
+
 ## Examples
 
 ```bash
-# Bump patch version in current directory
+# Show current version and available commands
 project-version
 
+# Bump patch version in current directory
+project-version bump
+
 # Bump minor version
-project-version minor
+project-version bump minor
 
 # Bump major version with verbose output
-project-version major --verbose
+project-version bump major --verbose
 
 # Dry run to see what would happen
-project-version --dry-run
+project-version bump --dry-run
 
 # Bump version without creating a git commit
-project-version --no-commit
+project-version bump --no-commit
 
 # Bump version in a specific directory
-project-version /path/to/project
+project-version /path/to/project bump
 ```
 
 ## Supported Project Files
 
 - **Node.js**: Updates the version field in package.json
+  - Detects and runs npm, yarn, pnpm, or bun to update dependencies
 - **Python**: Updates the version in pyproject.toml
+  - Detects and runs uv, poetry, pipenv, pdm, or pip to update dependencies
 - **Rust**: Updates the version in Cargo.toml
+  - Runs cargo update to update dependencies
 - **Go**: Updates version strings in version.go files
+  - Runs go mod tidy to update dependencies
 - **Ruby**: Updates versions in gemspec and version.rb files
+  - Runs bundle install to update dependencies
 
 ## Acknowledgements
 
