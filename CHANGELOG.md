@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- `set` command to set a specific version number directly
+  - Includes validation to prevent setting lower versions without `--force` flag
+  - Supports dry-run mode
 - Initial release of polybump
 - Support for Node.js (package.json)
 - Support for Python (pyproject.toml)

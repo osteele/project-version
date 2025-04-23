@@ -5,6 +5,7 @@ A cross-language project version bumper CLI that supports multiple project types
 ## Features
 
 - Bump the version number in project files (major, minor, or patch)
+- Set a specific version number directly
 - Support for multiple project types:
   - Node.js (package.json)
   - Python (pyproject.toml)
@@ -45,6 +46,7 @@ project-version [OPTIONS] [DIRECTORY] [COMMAND]
 
 ### Commands:
 - `bump` - Bump project version (major, minor, or patch)
+- `set` - Set project version to a specific version number
 - `help` - Print help information
 
 ### Arguments:
@@ -62,6 +64,13 @@ project-version [OPTIONS] [DIRECTORY] [COMMAND]
 - `--no-tag` - Skip tagging the commit
 - `--force-tag` - Force tag creation (overwrite existing tag)
 
+### Set Command Options:
+- `<VERSION>` - Version number to set (must be a valid semver string)
+- `--no-commit` - Skip committing changes
+- `--no-tag` - Skip tagging the commit
+- `--force-tag` - Force tag creation (overwrite existing tag)
+- `--force` - Force setting version even if it's lower than current version
+
 ## Examples
 
 ```bash
@@ -77,8 +86,15 @@ project-version bump minor
 # Bump major version with verbose output
 project-version bump major --verbose
 
+# Set a specific version
+project-version set 2.0.0
+
+# Set a lower version (requires --force)
+project-version set 1.0.0 --force
+
 # Dry run to see what would happen
 project-version bump --dry-run
+project-version set 2.0.0 --dry-run
 
 # Bump version without creating a git commit
 project-version bump --no-commit
@@ -116,4 +132,4 @@ project-version is built with:
 
 ## License
 
-MIT © [Oliver Steele](https://github.com/osteele)
+MIT [Oliver Steele](https://github.com/osteele)
