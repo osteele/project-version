@@ -1,5 +1,10 @@
 # project-version
 
+[![CI](https://github.com/osteele/project-version/actions/workflows/ci.yml/badge.svg)](https://github.com/osteele/project-version/actions/workflows/ci.yml)
+[![Docs](https://github.com/osteele/project-version/actions/workflows/docs.yml/badge.svg)](https://osteele.github.io/project-version/)
+[![Crate](https://img.shields.io/crates/v/project-version.svg)](https://crates.io/crates/project-version)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+
 A cross-language project version bumper CLI that supports multiple project types.
 
 ## Features

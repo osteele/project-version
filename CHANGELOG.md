@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- CI/CD improvements:
+  - Added GitHub Actions workflow for CI (lint, typecheck, test)
+  - Added GitHub Actions workflow for building and publishing documentation
+  - Added badges to README for CI status, documentation, and crates.io
 - Development tooling improvements:
   - Added `justfile` with common development commands
   - Added cargo-husky configuration for Git hooks
