@@ -26,12 +26,31 @@ jobs:
       - name: Cache dependencies
         uses: Swatinem/rust-cache@v2
       - name: Build documentation
+        # Build documentation with README included
         run: cargo doc --no-deps --document-private-items
       - name: Prepare docs for deployment
         run: |
           mkdir -p target/github-pages
-          cp -r target/doc target/github-pages/
-          echo "<meta http-equiv=\"refresh\" content=\"0; url=project_version/index.html\" />" > target/github-pages/index.html
+          # Copy the contents of target/doc directly to target/github-pages
+          cp -r target/doc/* target/github-pages/
+          
+          # Create a simple landing page that redirects to the API docs
+          cat > target/github-pages/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="utf-8">
+            <title>Project Version Documentation</title>
+            <meta http-equiv="refresh" content="0; url=project_version/index.html">
+          </head>
+          <body>
+            <p>Redirecting to <a href="project_version/index.html">documentation</a>...</p>
+          </body>
+          </html>
+          EOF
+          
+          # Create a .nojekyll file to disable GitHub Pages Jekyll processing
+          touch target/github-pages/.nojekyll
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
