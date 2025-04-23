@@ -65,7 +65,7 @@ project-version [OPTIONS] [DIRECTORY] [COMMAND]
 - `--force-tag` - Force tag creation (overwrite existing tag)
 
 ### Set Command Options:
-- `<VERSION>` - Version number to set (must be a valid semver string)
+- `<VERSION>` - Version number to set (must be a valid semver string, can include optional 'v' prefix)
 - `--no-commit` - Skip committing changes
 - `--no-tag` - Skip tagging the commit
 - `--force-tag` - Force tag creation (overwrite existing tag)
@@ -86,8 +86,9 @@ project-version bump minor
 # Bump major version with verbose output
 project-version bump major --verbose
 
-# Set a specific version
+# Set a specific version (with or without v prefix)
 project-version set 2.0.0
+project-version set v2.0.0
 
 # Set a lower version (requires --force)
 project-version set 1.0.0 --force
@@ -102,6 +103,29 @@ project-version bump --no-commit
 # Bump version in a specific directory
 project-version /path/to/project bump
 ```
+
+## Development Setup
+
+This project uses [just](https://github.com/casey/just) as a command runner for development tasks.
+
+### Quick Start
+
+1. Install dependencies:
+   ```bash
+   cargo build
+   ```
+
+2. Install the pre-commit tool (if not already installed):
+   ```bash
+   pip install pre-commit
+   ```
+
+3. Set up the development environment:
+   ```bash
+   just setup
+   ```
+
+For more detailed development instructions, see [DEVELOPMENT.md](docs/DEVELOPMENT.md).
 
 ## Supported Project Files
 

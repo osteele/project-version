@@ -8,7 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Development tooling improvements:
+  - Added `justfile` with common development commands
+  - Added cargo-husky configuration for Git hooks
+  - Added documentation for development setup
 - `set` command to set a specific version number directly
+  - Accepts version numbers with or without 'v' prefix (e.g., `2.0.0` or `v2.0.0`)
   - Includes validation to prevent setting lower versions without `--force` flag
   - Supports dry-run mode
 - Initial release of polybump

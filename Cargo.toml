@@ -29,3 +29,4 @@ dialoguer = "0.11"
 tempfile = "3.8"
 assert_fs = "1.0"
 predicates = "3.0"
+cargo-husky = { version = "1.5", features = ["precommit-hook", "run-cargo-test", "run-cargo-clippy", "run-cargo-fmt"] }
