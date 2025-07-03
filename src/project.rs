@@ -221,10 +221,10 @@ impl PythonProject {
         let locations = self.find_version_locations(&content)?;
 
         let prefix = if dry_run { "Would update" } else { "Updated" };
-        let mut diff = format!("{} pyproject.toml:", prefix);
+        let mut diff = format!("{prefix} pyproject.toml:");
 
         for (location, old_version) in &locations {
-            diff.push_str(&format!("\n  {}: {} → {}", location, old_version, version));
+            diff.push_str(&format!("\n  {location}: {old_version} → {old_version}"));
         }
 
         if !dry_run {
@@ -368,10 +368,7 @@ impl RustProject {
         let old_version = self.get_version()?;
 
         let prefix = if dry_run { "Would update" } else { "Updated" };
-        let diff = format!(
-            "{} Cargo.toml:\n  version: {} → {}",
-            prefix, old_version, version
-        );
+        let diff = format!("{prefix} Cargo.toml:\n  version: {old_version} → {version}");
 
         if !dry_run {
             // Parse the TOML with toml_edit to preserve formatting, spacing, and comments
@@ -380,8 +377,15 @@ impl RustProject {
                 Err(e) => return Err(anyhow!("Failed to parse Cargo.toml: {}", e)),
             };
 
+            let package = if doc.contains_key("package") {
+                doc.get_mut("package")
+            } else {
+                doc.get_mut("workspace")
+                    .and_then(|workspace| workspace.get_mut("package"))
+            };
+
             // Update the package.version
-            if let Some(package) = doc.get_mut("package") {
+            if let Some(package) = package {
                 if let Some(package_table) = package.as_table_mut() {
                     if package_table.contains_key("version") {
                         package_table["version"] = toml_edit::value(version.to_string());
@@ -412,6 +416,7 @@ impl Project for RustProject {
 
         let version_str = toml_value
             .get("package")
+            .or_else(|| toml_value.get("workspace")?.get("package"))
             .and_then(|package| package.get("version"))
             .and_then(|v| v.as_str())
             .ok_or_else(|| anyhow!("No version field found in Cargo.toml"))?;
@@ -653,8 +658,7 @@ impl RubyProject {
 
         let prefix = if dry_run { "Would update" } else { "Updated" };
         diff.push_str(&format!(
-            "{} Ruby project version from {} to {}:\n",
-            prefix, old_version, version
+            "{prefix} Ruby project version from {old_version} to {version}:\n"
         ));
 
         // Try to update gemspec

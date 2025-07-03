@@ -114,7 +114,7 @@ fn main() -> Result<()> {
                 .green()
                 .bold()
         );
-        debug!("Arguments: {:?}", args);
+        debug!("Arguments: {args:?}");
     }
 
     if args.dry_run {
@@ -128,7 +128,7 @@ fn main() -> Result<()> {
     // Get current version
     let current_version = project.get_version()?;
     if args.verbose {
-        println!("Current version: {}", current_version);
+        println!("Current version: {current_version}");
     }
 
     match &args.command {
@@ -256,17 +256,17 @@ fn bump_version(
                         if config.verbose {
                             let stdout = String::from_utf8_lossy(&output.stdout);
                             if !stdout.is_empty() {
-                                println!("Package manager output:\n{}", stdout);
+                                println!("Package manager output:\n{stdout}");
                             }
                         }
                         println!("Successfully updated dependencies");
                     } else {
                         let stderr = String::from_utf8_lossy(&output.stderr);
-                        eprintln!("Failed to update dependencies: {}", stderr);
+                        eprintln!("Failed to update dependencies: {stderr}");
                     }
                 }
                 Err(e) => {
-                    eprintln!("Failed to run package manager: {}", e);
+                    eprintln!("Failed to run package manager: {e}");
                 }
             }
         }
@@ -285,17 +285,14 @@ fn bump_version(
             let mut files = files_to_commit;
             // Safe to unwrap since we checked has_changelog
             files.push(changelog_path.unwrap());
-            git::commit_changes(&files, &format!("release: version {}", new_version))?;
+            git::commit_changes(&files, &format!("release: version {new_version}"))?;
         } else {
-            git::commit_changes(
-                &files_to_commit,
-                &format!("release: version {}", new_version),
-            )?;
+            git::commit_changes(&files_to_commit, &format!("release: version {new_version}"))?;
         }
         println!("Committed version bump");
 
         if !config.no_tag {
-            let tag_name = format!("v{}", new_version);
+            let tag_name = format!("v{new_version}");
 
             // Check if tag exists
             if git::tag_exists(&tag_name)? {
@@ -307,7 +304,7 @@ fn bump_version(
                     use dialoguer::{theme::ColorfulTheme, Confirm};
 
                     let overwrite = Confirm::with_theme(&ColorfulTheme::default())
-                        .with_prompt(format!("Tag {} already exists. Overwrite?", tag_name))
+                        .with_prompt(format!("Tag {tag_name} already exists. Overwrite?"))
                         .default(false)
                         .interact()?;
 
@@ -344,7 +341,7 @@ fn set_version(
     let clean_version_str = version_str.strip_prefix('v').unwrap_or(version_str);
 
     let new_version = semver::Version::parse(clean_version_str)
-        .context(format!("Invalid version format: {}", version_str))?;
+        .context(format!("Invalid version format: {version_str}"))?;
 
     // Check if the new version is lower than the current version
     if !config.force && new_version < current_version {
@@ -407,17 +404,17 @@ fn set_version(
                         if config.config.verbose {
                             let stdout = String::from_utf8_lossy(&output.stdout);
                             if !stdout.is_empty() {
-                                println!("Package manager output:\n{}", stdout);
+                                println!("Package manager output:\n{stdout}");
                             }
                         }
                         println!("Successfully updated dependencies");
                     } else {
                         let stderr = String::from_utf8_lossy(&output.stderr);
-                        eprintln!("Failed to update dependencies: {}", stderr);
+                        eprintln!("Failed to update dependencies: {stderr}");
                     }
                 }
                 Err(e) => {
-                    eprintln!("Failed to run package manager: {}", e);
+                    eprintln!("Failed to run package manager: {e}");
                 }
             }
         }
@@ -436,17 +433,14 @@ fn set_version(
             let mut files = files_to_commit;
             // Safe to unwrap since we checked has_changelog
             files.push(changelog_path.unwrap());
-            git::commit_changes(&files, &format!("release: version {}", new_version))?;
+            git::commit_changes(&files, &format!("release: version {new_version}"))?;
         } else {
-            git::commit_changes(
-                &files_to_commit,
-                &format!("release: version {}", new_version),
-            )?;
+            git::commit_changes(&files_to_commit, &format!("release: version {new_version}"))?;
         }
         println!("Committed version bump");
 
         if !config.config.no_tag {
-            let tag_name = format!("v{}", new_version);
+            let tag_name = format!("v{new_version}");
 
             // Check if tag exists
             if git::tag_exists(&tag_name)? {
@@ -458,7 +452,7 @@ fn set_version(
                     use dialoguer::{theme::ColorfulTheme, Confirm};
 
                     let overwrite = Confirm::with_theme(&ColorfulTheme::default())
-                        .with_prompt(format!("Tag {} already exists. Overwrite?", tag_name))
+                        .with_prompt(format!("Tag {tag_name} already exists. Overwrite?",))
                         .default(false)
                         .interact()?;
 

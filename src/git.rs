@@ -37,7 +37,7 @@ pub fn commit_changes(files: &[PathBuf], message: &str) -> Result<()> {
     }
 
     // Commit changes
-    debug!("Committing with message: {}", message);
+    debug!("Committing with message: {message}");
 
     let status = Command::new("git")
         .args(["commit", "-m", message])
@@ -81,7 +81,7 @@ pub fn create_tag(tag: &str, force: bool) -> Result<()> {
 
     args.push(tag);
 
-    debug!("Creating git tag: {}", tag);
+    debug!("Creating git tag: {tag}");
 
     let status = Command::new("git")
         .args(&args)

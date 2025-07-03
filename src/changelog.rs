@@ -55,7 +55,7 @@ pub fn update_changelog(path: &Path, version: &Version) -> Result<()> {
     let mut found = false;
 
     // Format the version header
-    let version_header = format!("## [{}] - {}", version, today);
+    let version_header = format!("## [{version}] - {today}");
 
     // Try each pattern until one matches
     for pattern in &UNRELEASED_PATTERNS {
@@ -63,7 +63,7 @@ pub fn update_changelog(path: &Path, version: &Version) -> Result<()> {
         let re = match Regex::new(pattern) {
             Ok(re) => re,
             Err(e) => {
-                warn!("Invalid regex pattern: {} - {}", pattern, e);
+                warn!("Invalid regex pattern: {pattern} - {e}");
                 continue;
             }
         };
@@ -73,10 +73,7 @@ pub fn update_changelog(path: &Path, version: &Version) -> Result<()> {
             // It matched! Replace the first occurrence only
             new_content = re.replace(&content, &version_header).to_string();
             found = true;
-            debug!(
-                "Matched pattern: {} - replacing with: {}",
-                pattern, version_header
-            );
+            debug!("Matched pattern: {pattern} - replacing with: {version_header}");
             break;
         }
     }
@@ -108,7 +105,7 @@ pub fn dry_run_update_changelog(path: &Path, version: &Version) -> Result<String
     let mut diff = String::new();
     let mut found = false;
 
-    let version_header = format!("## [{}] - {}", version, today);
+    let version_header = format!("## [{version}] - {today}");
 
     // Try each pattern until one matches
     for pattern in &UNRELEASED_PATTERNS {
@@ -116,7 +113,7 @@ pub fn dry_run_update_changelog(path: &Path, version: &Version) -> Result<String
         let re = match Regex::new(pattern) {
             Ok(re) => re,
             Err(e) => {
-                warn!("Invalid regex pattern: {} - {}", pattern, e);
+                warn!("Invalid regex pattern: {pattern} - {e}");
                 continue;
             }
         };
