@@ -22,6 +22,7 @@ struct VersionConfig {
     verbose: bool,
     no_commit: bool,
     no_tag: bool,
+    no_lockupdate: bool,
     force_tag: bool,
     directory: String,
 }
@@ -73,6 +74,10 @@ enum Commands {
         #[arg(long)]
         no_tag: bool,
 
+        /// Skip updateing lock files
+        #[arg(long)]
+        no_lockupdate: bool,
+
         /// Force tag creation (overwrite existing tag)
         #[arg(long)]
         force_tag: bool,
@@ -89,6 +94,10 @@ enum Commands {
         /// Skip tagging the commit
         #[arg(long)]
         no_tag: bool,
+
+        /// Skip updateing lock files
+        #[arg(long)]
+        no_lockupdate: bool,
 
         /// Force tag creation (overwrite existing tag)
         #[arg(long)]
@@ -135,6 +144,7 @@ fn main() -> Result<()> {
         Some(Commands::Bump {
             bump_type,
             no_commit,
+            no_lockupdate,
             no_tag,
             force_tag,
         }) => {
@@ -143,6 +153,7 @@ fn main() -> Result<()> {
                 dry_run: args.dry_run,
                 verbose: args.verbose,
                 no_commit: *no_commit,
+                no_lockupdate: *no_lockupdate,
                 no_tag: *no_tag,
                 force_tag: *force_tag,
                 directory: args.directory.clone(),
@@ -153,6 +164,7 @@ fn main() -> Result<()> {
             version,
             no_commit,
             no_tag,
+            no_lockupdate,
             force_tag,
             force,
         }) => {
@@ -162,6 +174,7 @@ fn main() -> Result<()> {
                     dry_run: args.dry_run,
                     verbose: args.verbose,
                     no_commit: *no_commit,
+                    no_lockupdate: *no_lockupdate,
                     no_tag: *no_tag,
                     force_tag: *force_tag,
                     directory: args.directory.clone(),
@@ -240,7 +253,7 @@ fn bump_version(
     }
 
     // Update lock files with the appropriate package manager
-    if !config.dry_run {
+    if !config.dry_run && !config.no_lockupdate {
         if let Some(update_command) = project.get_package_manager_update_command() {
             println!("Updating dependencies with: {}", update_command.cyan());
 
