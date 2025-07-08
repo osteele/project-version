@@ -224,7 +224,7 @@ impl PythonProject {
         let mut diff = format!("{prefix} pyproject.toml:");
 
         for (location, old_version) in &locations {
-            diff.push_str(&format!("\n  {location}: {old_version} → {old_version}"));
+            diff.push_str(&format!("\n  {location}: {old_version} → {version}"));
         }
 
         if !dry_run {
