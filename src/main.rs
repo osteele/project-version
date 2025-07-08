@@ -95,7 +95,7 @@ enum Commands {
         #[arg(long)]
         no_tag: bool,
 
-        /// Skip updateing lock files
+        /// Skip updating lock files
         #[arg(long)]
         no_lockupdate: bool,
 
