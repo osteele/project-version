@@ -286,7 +286,11 @@ fn bump_version(
     } else if let Some(update_command) = project.get_package_manager_update_command() {
         println!(
             "{} Would update dependencies with: {}",
-            "[DRY RUN]".yellow(),
+            if config.no_lockupdate {
+                "[NO Update]".white()
+            } else {
+                "[DRY RUN]".yellow()
+            },
             update_command
         );
     }
