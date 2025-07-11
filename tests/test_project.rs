@@ -109,6 +109,43 @@ edition = "2021"
 }
 
 #[test]
+fn test_rust_workspace_detection() -> Result<()> {
+    let temp_dir = tempdir()?;
+    let cargo_path = temp_dir.path().join("Cargo.toml");
+
+    // Create a minimal Cargo.toml
+    fs::write(
+        &cargo_path,
+        r#"[workspace]
+name = "test-project"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+"#,
+    )?;
+
+    // Detect project type
+    let project = detect_project(temp_dir.path().to_str().unwrap())?;
+
+    // Verify detected version
+    let version = project.get_version()?;
+    assert_eq!(version, Version::new(0, 1, 0));
+
+    // Test update
+    let new_version = Version::new(0, 1, 1);
+    project.update_version(&new_version)?;
+
+    // Verify updated version
+    let updated_content = fs::read_to_string(&cargo_path)?;
+    assert!(updated_content.contains(r#"version = "0.1.1""#));
+
+    Ok(())
+}
+
+#[test]
 fn test_changelog_update() -> Result<()> {
     let temp_dir = tempdir()?;
     let changelog_path = temp_dir.path().join("CHANGELOG.md");
