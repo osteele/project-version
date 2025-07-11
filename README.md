@@ -159,6 +159,11 @@ project-version is built with:
 - [colored](https://github.com/mackwic/colored) - Terminal colors
 - [dialoguer](https://github.com/console-rs/dialoguer) - User prompts
 
+## Contributors
+
+- [Oliver Steele](https://github.com/osteele) - Project maintainer
+- [Marco Fuykschot](https://github.com/MarcoFuykschot) - Rust workspace package version support
+
 ## License
 
 MIT [Oliver Steele](https://github.com/osteele)

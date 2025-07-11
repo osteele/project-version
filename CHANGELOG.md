@@ -7,7 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Support for Rust workspace package versions ([#1](https://github.com/osteele/project-version/pull/1)) - Thanks [@MarcoFuykschot](https://github.com/MarcoFuykschot)!
+
 ### Added
+
 - CI/CD improvements:
   - Added GitHub Actions workflow for CI (lint, typecheck, test)
   - Added GitHub Actions workflow for building and publishing documentation
