@@ -74,7 +74,7 @@ enum Commands {
         #[arg(long)]
         no_tag: bool,
 
-        /// Skip updateing lock files
+        /// Skip updating lock files
         #[arg(long)]
         no_lockupdate: bool,
 
@@ -287,7 +287,7 @@ fn bump_version(
         println!(
             "{} Would update dependencies with: {}",
             if config.no_lockupdate {
-                "[NO Update]".white()
+                "[NO UPDATE]".white()
             } else {
                 "[DRY RUN]".yellow()
             },
