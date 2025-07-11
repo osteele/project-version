@@ -345,7 +345,7 @@ fn set_version(
 
     // Check if the new version is lower than the current version
     if !config.force && new_version < current_version {
-        return Err(anyhow!("New version ({}) is lower than current version ({}). Use --force to override this check.", 
+        return Err(anyhow!("New version ({}) is lower than current version ({}). Use --force to override this check.",
             new_version, current_version));
     }
 
@@ -452,7 +452,7 @@ fn set_version(
                     use dialoguer::{theme::ColorfulTheme, Confirm};
 
                     let overwrite = Confirm::with_theme(&ColorfulTheme::default())
-                        .with_prompt(format!("Tag {tag_name} already exists. Overwrite?",))
+                        .with_prompt(format!("Tag {tag_name} already exists. Overwrite?"))
                         .default(false)
                         .interact()?;
 
