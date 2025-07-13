@@ -164,7 +164,7 @@ project-version is built with:
 ## Contributors
 
 - [Oliver Steele](https://github.com/osteele) - Project maintainer
-- [Marco Fuykschot](https://github.com/MarcoFuykschot) - Rust workspace package version support
+- [Marco Fuykschot](https://github.com/MarcoFuykschot) - Rust workspace package version support, `--no-lockupdate` flag
 
 ## License
 
