@@ -67,6 +67,7 @@ project-version [OPTIONS] [DIRECTORY] [COMMAND]
 - `[BUMP_TYPE]` - Type of version bump to perform: major, minor, or patch (default: patch)
 - `--no-commit` - Skip committing changes
 - `--no-tag` - Skip tagging the commit
+- `--no-lockupdate` - Skip updating lock files (package-lock.json, Cargo.lock, etc.)
 - `--force-tag` - Force tag creation (overwrite existing tag)
 
 ### Set Command Options:
@@ -74,6 +75,7 @@ project-version [OPTIONS] [DIRECTORY] [COMMAND]
 - `--no-commit` - Skip committing changes
 - `--no-tag` - Skip tagging the commit
 - `--force-tag` - Force tag creation (overwrite existing tag)
+- `--no-lockupdate` - Skip updating lock files (package-lock.json, Cargo.lock, etc.)
 - `--force` - Force setting version even if it's lower than current version
 
 ## Examples
