@@ -146,6 +146,7 @@ For more detailed development instructions, see [DEVELOPMENT.md](docs/DEVELOPMEN
   - Runs go mod tidy to update dependencies
 - **Ruby**: Updates versions in gemspec and version.rb files
   - Runs bundle install to update dependencies
+- **Helm charts**: Updates version in the Chart.yaml file
 
 ## Acknowledgements
 

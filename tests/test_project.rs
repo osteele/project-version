@@ -41,6 +41,42 @@ fn test_node_project_detection() -> Result<()> {
 }
 
 #[test]
+fn test_chart_project_detection() -> Result<()> {
+    let temp_dir = tempdir()?;
+    let package_json_path = temp_dir.path().join("Chart.yaml");
+
+    // Create a minimal package.json
+    fs::write(
+        &package_json_path,
+        r#" 
+apiVersion: v2
+name: Helm Chart
+description: A Helm chart for Kubernetes
+type: application
+version: 1.2.3
+appVersion: "Release-1.0.0"
+"#,
+    )?;
+
+    // Detect project type
+    let project = detect_project(temp_dir.path().to_str().unwrap())?;
+
+    // Verify detected version
+    let version = project.get_version()?;
+    assert_eq!(version, Version::new(1, 2, 3));
+
+    // Test update
+    let new_version = Version::new(2, 0, 0);
+    project.update_version(&new_version)?;
+
+    // Verify updated version
+    let updated_content = fs::read_to_string(&package_json_path)?;
+    assert!(updated_content.contains(r#"version: 2.0.0"#));
+
+    Ok(())
+}
+
+#[test]
 fn test_python_project_detection() -> Result<()> {
     let temp_dir = tempdir()?;
     let pyproject_path = temp_dir.path().join("pyproject.toml");

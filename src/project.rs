@@ -63,7 +63,87 @@ pub fn detect_project(dir: &str) -> Result<Box<dyn Project>> {
         return Ok(Box::new(RubyProject::new(gemfile_path)));
     }
 
+    let chart_path = dir_path.join("Chart.yaml");
+    if chart_path.exists() {
+        debug!("Detected Helm chart project (Chart.yaml)");
+        return Ok(Box::new(HelmChartProject::new(chart_path)));
+    }
+
     Err(anyhow!("No supported project files found in {}", dir))
+}
+// Helm chart project (Chart.yaml)
+pub struct HelmChartProject {
+    path: PathBuf,
+}
+
+impl HelmChartProject {
+    pub fn new(path: PathBuf) -> Self {
+        Self { path }
+    }
+
+    fn update_version_internal(&self, version: &Version, dry_run: bool) -> Result<String> {
+        // Read the original content
+        let content = fs::read_to_string(&self.path).context("Failed to read Chart.yaml")?;
+
+        let old_version = self.get_version()?;
+
+        // Using regex for targeted replacement that preserves all formatting
+        let re = regex::Regex::new(r#"(?m)^(version:\s)([^\s]+)(.*)$"#).unwrap();
+        let new_content = re.replace(&content, |caps: &regex::Captures| {
+            format!("{}{}{}", &caps[1], version, &caps[3])
+        });
+
+        let diff = format!(
+            "{} Chart.yaml:\n  version: {} → {}",
+            if dry_run { "Would update" } else { "Updated" },
+            old_version,
+            version
+        );
+
+        if !dry_run {
+            fs::write(&self.path, new_content.as_bytes())
+                .context("Failed to write updated Chart.yaml")?;
+        }
+
+        Ok(diff)
+    }
+}
+
+impl Project for HelmChartProject {
+    fn get_version(&self) -> Result<Version> {
+        let content = fs::read_to_string(&self.path).context("Failed to read Chart.yaml")?;
+
+        let yaml: serde_yaml::Value =
+            serde_yaml::from_str(&content).context("Failed to parse Chart.yaml")?;
+
+        let version_str = yaml["version"]
+            .as_str()
+            .ok_or_else(|| anyhow!("No version field found in Chart.yaml"))?;
+
+        Version::parse(version_str).context("Failed to parse version from Chart.yaml")
+    }
+
+    fn update_version(&self, version: &Version) -> Result<()> {
+        self.update_version_internal(version, false)?;
+        Ok(())
+    }
+
+    fn dry_run_update(&self, version: &Version) -> Result<String> {
+        self.update_version_internal(version, true)
+    }
+
+    fn get_file_path(&self) -> &Path {
+        &self.path
+    }
+
+    fn get_files_to_commit(&self) -> Vec<PathBuf> {
+        vec![self.path.clone()]
+    }
+
+    fn get_package_manager_update_command(&self) -> Option<String> {
+        // Helm doesn't have a package manager update command
+        None
+    }
 }
 
 // Node.js project (package.json)
